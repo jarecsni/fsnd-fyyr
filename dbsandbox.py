@@ -47,8 +47,8 @@ class Venue(Base):
     facebook_link = Column(String(120))
     # additional fields (to be done in a migration)
     website_link = Column(String(500))
-    looking_for_artist = Column(Boolean)
-    looking_for_description = Column(String)
+    seeking_talent = Column(Boolean)
+    seeking_description = Column(String)
     # } migration end
     
     # migration: relations {
@@ -103,25 +103,46 @@ class ArtistGenre(Base):
 def createScheme():
     Base.metadata.create_all(bind=engine)
 
-def loadVenues():
-
-    venue = Venue(name='The musical hop', city='San Francisco', state='CA', 
-        address='1015 Folsom Street', phone='123-123-1234', 
-        image_link='https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
-        facebook_link='https://www.facebook.com/TheMusicalHop', website_link='https://www.themusicalhop.com',
-        looking_for_artist=True, 
-        looking_for_description='We are on the lookout for a local artist to play every two weeks. Please call us.'
+def loadVenue(name, city, state, address, phone, image_link, facebook_link, website_link, 
+    seeking_talent, seeking_description, genres):
+    venue = Venue(name, city, state, 
+        address, phone, 
+        image_link,
+        facebook_link, website_link,
+        seeking_talent, 
+        seeking_description
     )
-
     db_session.add(venue)
     db_session.commit()
 
-    db_session.add(VenueGenre(venue_id=venue.id, name='Jazz'))
-    db_session.add(VenueGenre(venue_id=venue.id, name='Reggae'))
-    db_session.add(VenueGenre(venue_id=venue.id, name='Swing'))
-    db_session.add(VenueGenre(venue_id=venue.id, name='Classical'))
-    db_session.add(VenueGenre(venue_id=venue.id, name='Folk'))
-    db_session.commit()
+    for g in genres:
+        db_session.add(VenueGenre(venue_id=venue.id, name=g))
+
+
+def loadVenues():
+
+    # The musical hop
+    loadVenue(name='The musical hop', city='San Francisco', state='CA', 
+        address='1015 Folsom Street', phone='123-123-1234', 
+        image_link='https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
+        facebook_link='https://www.facebook.com/TheMusicalHop', website_link='https://www.themusicalhop.com',
+        seeking_talent=True, 
+        seeking_description='We are on the lookout for a local artist to play every two weeks. Please call us.',
+        genres=['Jazz', 'Reggae', 'Swing', 'Classical', 'Folk']
+    )
+
+    # The dueling pianos bar
+    loadVenue(name='The dueling pianos bar', city='New York', state='NY', 
+        address="335 Delancey Street", phone="914-003-1132", 
+        image_link="https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80",
+        facebook_link="https://www.facebook.com/theduelingpianos", 
+        website_link="https://www.theduelingpianos.com",
+        seeking_talent=False, 
+        seeking_description='',
+        genres=['Classical', 'R&B', 'Hip-Hop']
+    )
+
+
 
     # example to access the genres relation
     # db_session.query(Venue).first().genres
