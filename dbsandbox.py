@@ -103,14 +103,14 @@ class ArtistGenre(Base):
 def createScheme():
     Base.metadata.create_all(bind=engine)
 
-def loadVenue(name, city, state, address, phone, image_link, facebook_link, website_link, 
+def loadVenue(id, name, city, state, address, phone, image_link, facebook_link, website_link, 
     seeking_talent, seeking_description, genres):
-    venue = Venue(name, city, state, 
-        address, phone, 
-        image_link,
-        facebook_link, website_link,
-        seeking_talent, 
-        seeking_description
+    venue = Venue(id=id, name=name, city=city, state=state, 
+        address=address, phone=phone, 
+        image_link=image_link,
+        facebook_link=facebook_link, website_link=website_link,
+        seeking_talent=seeking_talent, 
+        seeking_description=seeking_description
     )
     db_session.add(venue)
     db_session.commit()
@@ -121,7 +121,7 @@ def loadVenue(name, city, state, address, phone, image_link, facebook_link, webs
 
 def loadVenues():
     # The musical hop
-    loadVenue(name='The musical hop', city='San Francisco', state='CA', 
+    loadVenue(id=1, name='The musical hop', city='San Francisco', state='CA', 
         address='1015 Folsom Street', phone='123-123-1234', 
         image_link='https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
         facebook_link='https://www.facebook.com/TheMusicalHop', website_link='https://www.themusicalhop.com',
@@ -131,7 +131,7 @@ def loadVenues():
     )
 
     # The dueling pianos bar
-    loadVenue(name='The dueling pianos bar', city='New York', state='NY', 
+    loadVenue(id=2, name='The dueling pianos bar', city='New York', state='NY', 
         address="335 Delancey Street", phone="914-003-1132", 
         image_link="https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80",
         facebook_link="https://www.facebook.com/theduelingpianos", 
@@ -142,7 +142,7 @@ def loadVenues():
     )
 
     # Park Square Live Music & Coffee
-    loadVenue(name="Park Square Live Music & Coffee", city="San Francisco", state='CA', 
+    loadVenue(id=3, name="Park Square Live Music & Coffee", city="San Francisco", state='CA', 
         address="34 Whiskey Moore Ave", phone="415-000-1234", 
         image_link="https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
         facebook_link="https://www.facebook.com/ParkSquareLiveMusicAndCoffee", 
@@ -154,14 +154,17 @@ def loadVenues():
     # example to access the genres relation
     # db_session.query(Venue).first().genres
 
-def loadArtist(name, city, state, phone, image_link, facebook_link, website_link, 
+def loadArtist(id, name, city, state, phone, image_link, facebook_link, website_link, 
     seeking_venue, seeking_description, genres):
-    artist = Artist(name, city, state, 
-        phone, 
-        image_link,
-        facebook_link, website_link,
-        seeking_venue, 
-        seeking_description
+    artist = Artist(
+        id=id,
+        name=name, city=city, state=state, 
+        phone=phone, 
+        image_link=image_link,
+        facebook_link=facebook_link, 
+        website_link=website_link,
+        seeking_venue=seeking_venue, 
+        seeking_description=seeking_description
     )
     db_session.add(artist)
     db_session.commit()
@@ -171,7 +174,7 @@ def loadArtist(name, city, state, phone, image_link, facebook_link, website_link
     db_session.commit()
 
 def loadArtists():
-    loadArtist(name='Guns N Petals', city='San Francisco', state='CA',
+    loadArtist(id=4, name='Guns N Petals', city='San Francisco', state='CA',
         phone='326-123-5000', 
         image_link='https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80', 
         facebook_link='https://www.facebook.com/GunsNPetals', 
@@ -179,7 +182,7 @@ def loadArtists():
         seeking_venue=True,
         seeking_description='Looking for shows to perform at in the San Francisco Bay Area!',
         genres=["Rock n Roll"])
-    loadArtist(name='Matt Quevedo', city='New York', state='NY',
+    loadArtist(id=5, name='Matt Quevedo', city='New York', state='NY',
         phone="300-400-5000", 
         image_link='https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80', 
         facebook_link='https://www.facebook.com/mattquevedo923251523', 
@@ -187,7 +190,7 @@ def loadArtists():
         seeking_venue=False,
         seeking_description=None,
         genres=["Jazz"])
-    loadArtist(name='The Wild Sax Band', city='San Francisco', state='CA',
+    loadArtist(id=6, name='The Wild Sax Band', city='San Francisco', state='CA',
         phone='432-325-5432', 
         image_link='https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80', 
         facebook_link=None, 
