@@ -81,8 +81,8 @@ class Artist(Base):
     facebook_link = Column(String(120))
     # additional fields (to be done in a migration)
     website_link = Column(String(500))
-    looking_for_venue = Column(Boolean)
-    looking_for_description = Column(String)
+    seeking_venue = Column(Boolean)
+    seeking_description = Column(String)
     # } migration end
     shows = relationship("Show", back_populates="artist")
     genres = relationship("ArtistGenre")
@@ -117,10 +117,9 @@ def loadVenue(name, city, state, address, phone, image_link, facebook_link, webs
 
     for g in genres:
         db_session.add(VenueGenre(venue_id=venue.id, name=g))
-
+    db_session.commit()
 
 def loadVenues():
-
     # The musical hop
     loadVenue(name='The musical hop', city='San Francisco', state='CA', 
         address='1015 Folsom Street', phone='123-123-1234', 
@@ -142,9 +141,59 @@ def loadVenues():
         genres=['Classical', 'R&B', 'Hip-Hop']
     )
 
-
-
+    # Park Square Live Music & Coffee
+    loadVenue(name="Park Square Live Music & Coffee", city="San Francisco", state='CA', 
+        address="34 Whiskey Moore Ave", phone="415-000-1234", 
+        image_link="https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
+        facebook_link="https://www.facebook.com/ParkSquareLiveMusicAndCoffee", 
+        website_link="https://www.parksquarelivemusicandcoffee.com",
+        seeking_talent=False, 
+        seeking_description='',
+        genres=["Rock n Roll", "Jazz", "Classical", "Folk"]
+    )
     # example to access the genres relation
     # db_session.query(Venue).first().genres
 
+def loadArtist(name, city, state, phone, image_link, facebook_link, website_link, 
+    seeking_venue, seeking_description, genres):
+    artist = Artist(name, city, state, 
+        phone, 
+        image_link,
+        facebook_link, website_link,
+        seeking_venue, 
+        seeking_description
+    )
+    db_session.add(artist)
+    db_session.commit()
 
+    for g in genres:
+        db_session.add(ArtistGenre(artist_id=artist.id, name=g))
+    db_session.commit()
+
+def loadArtists():
+    loadArtist(name='Guns N Petals', city='San Francisco', state='CA',
+        phone='326-123-5000', 
+        image_link='https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80', 
+        facebook_link='https://www.facebook.com/GunsNPetals', 
+        website_link='https://www.gunsnpetalsband.com',
+        seeking_venue=True,
+        seeking_description='Looking for shows to perform at in the San Francisco Bay Area!',
+        genres=["Rock n Roll"])
+    loadArtist(name='Matt Quevedo', city='New York', state='NY',
+        phone="300-400-5000", 
+        image_link='https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80', 
+        facebook_link='https://www.facebook.com/mattquevedo923251523', 
+        website_link=None,
+        seeking_venue=False,
+        seeking_description=None,
+        genres=["Jazz"])
+    loadArtist(name='The Wild Sax Band', city='San Francisco', state='CA',
+        phone='432-325-5432', 
+        image_link='https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80', 
+        facebook_link=None, 
+        website_link=None,
+        seeking_venue=False,
+        seeking_description=None,
+        genres=["Jazz", "Classical"])
+    
+    
