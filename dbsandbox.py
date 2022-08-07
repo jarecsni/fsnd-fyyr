@@ -28,7 +28,7 @@ class Show(Base):
     __tablename__ = 'show'
     venue_id = Column(ForeignKey("venue.id"), primary_key=True)
     artist_id = Column(ForeignKey("artist.id"), primary_key=True)
-    date_and_time = Column(DateTime(timezone=True), nullable=False, primary_key=True)
+    start_time = Column(DateTime(timezone=True), nullable=False, primary_key=True)
     artist = relationship("Artist", back_populates="shows")
     venue = relationship("Venue", back_populates="shows")
 
@@ -199,4 +199,20 @@ def loadArtists():
         seeking_description=None,
         genres=["Jazz", "Classical"])
     
-    
+def loadShow(venue_id, artist_id, start_time):
+    show = Show(venue_id=venue_id, artist_id=artist_id, start_time=start_time)
+    db_session.add(show)
+    db_session.commit()
+
+def loadShows():
+    loadShow(venue_id=1, artist_id=4, start_time='2019-05-21T21:30:00.000Z')
+    loadShow(venue_id=3, artist_id=5, start_time='2019-06-15T23:00:00.000Z')
+    loadShow(venue_id=3, artist_id=6, start_time='2035-04-01T20:00:00.000Z')
+    loadShow(venue_id=3, artist_id=6, start_time='2035-04-08T20:00:00.000Z')
+    loadShow(venue_id=3, artist_id=6, start_time='2035-04-15T20:00:00.000Z')
+
+def setupDB():
+    createScheme()
+    loadVenues()
+    loadArtists()
+    loadShows()
