@@ -15,7 +15,7 @@ from forms import *
 from datamodels import db
 
 # TODO clean this up
-from dbsandbox import db_session, Artist
+from dbsandbox import db_session, Artist, Venue
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -64,28 +64,52 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
-  return render_template('pages/venues.html', areas=data);
+  # data=[{
+  #   "city": "San Francisco",
+  #   "state": "CA",
+  #   "venues": [{
+  #     "id": 1,
+  #     "name": "The Musical Hop",
+  #     "num_upcoming_shows": 0,
+  #   }, {
+  #     "id": 3,
+  #     "name": "Park Square Live Music & Coffee",
+  #     "num_upcoming_shows": 1,
+  #   }]
+  # }, {
+  #   "city": "New York",
+  #   "state": "NY",
+  #   "venues": [{
+  #     "id": 2,
+  #     "name": "The Dueling Pianos Bar",
+  #     "num_upcoming_shows": 0,
+  #   }]
+  # }]
+  result = db_session.query(Venue.id, Venue.city, Venue.state, Venue.name).order_by('state')
+  city = None
+  data = []
+  # TODO add aggregation for upcoming shows
+  for v in result:
+    venue = {
+          "id": v.id,
+          "name": v.name,
+          "num_upcoming_shows": 0
+    }
+    print(v.city, city)
+    if v.city == city:
+      print(data[len(data)-1])
+      data[len(data)-1].get('venues').append(venue)
+    else:
+      city = v.city
+      data.append({
+        "city": v.city,
+        "state": v.state,
+        "venues": [venue]
+      })
+      
+          
+
+  return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
