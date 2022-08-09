@@ -91,11 +91,12 @@ def venues():
   data = []
   # TODO add aggregation for upcoming shows
   for v in result:
-    num_upcoming_shows = db_session.query(Show, func.count(Venue.id)).join(Venue).group_by(Venue, Show).filter(Show.start_time > func.now()).all()
+    #num_upcoming_shows = db_session.query(Show, func.count(Venue.id)).join(Venue).group_by(Venue, Show).filter(Show.start_time > func.now()).all()
+    num_upcoming_shows = db_session.query(Show).filter(Show.venue_id == v.id).filter(Show.start_time > func.now()).count()
     venue = {
           "id": v.id,
           "name": v.name,
-          "num_upcoming_shows": len(num_upcoming_shows)
+          "num_upcoming_shows": num_upcoming_shows
     }
     if v.city == city:
       data[len(data)-1].get('venues').append(venue)
