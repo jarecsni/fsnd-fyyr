@@ -33,7 +33,7 @@ class Show(Base):
     venue = relationship("Venue", back_populates="shows")
 
     def __repr__(self):
-        return f'<Show with Artist: {self.artist.name} at Venue: {self.venue.name} at: {self.date_and_time}>'
+        return f'<Show with Artist: {self.artist.name} at Venue: {self.venue.name} at: {self.start_time}>'
 
 class Venue(Base):
     __tablename__ = 'venue'

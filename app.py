@@ -15,7 +15,8 @@ from forms import *
 from datamodels import db
 
 # TODO clean this up
-from dbsandbox import db_session, Artist, Venue
+from dbsandbox import db_session, Artist, Venue, Show
+from sqlalchemy.sql import func
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -90,14 +91,13 @@ def venues():
   data = []
   # TODO add aggregation for upcoming shows
   for v in result:
+    num_upcoming_shows = db_session.query(Show, func.count(Venue.id)).join(Venue).group_by(Venue, Show).filter(Show.start_time > func.now()).all()
     venue = {
           "id": v.id,
           "name": v.name,
-          "num_upcoming_shows": 0
+          "num_upcoming_shows": len(num_upcoming_shows)
     }
-    print(v.city, city)
     if v.city == city:
-      print(data[len(data)-1])
       data[len(data)-1].get('venues').append(venue)
     else:
       city = v.city
@@ -105,9 +105,7 @@ def venues():
         "city": v.city,
         "state": v.state,
         "venues": [venue]
-      })
-      
-          
+      })      
 
   return render_template('pages/venues.html', areas=data)
 
