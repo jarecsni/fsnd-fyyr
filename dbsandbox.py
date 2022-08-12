@@ -37,7 +37,7 @@ class Show(Base):
 
 class Venue(Base):
     __tablename__ = 'venue'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     city = Column(String(120))
     state = Column(String(120))
@@ -71,7 +71,7 @@ class VenueGenre(Base):
 
 class Artist(Base):
     __tablename__ = 'artist'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     city = Column(String(120))
     state = Column(String(120))

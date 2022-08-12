@@ -16,7 +16,7 @@ from forms import *
 from datamodels import db
 
 # TODO clean this up
-from dbsandbox import db_session, Artist, Venue, Show
+from dbsandbox import db_session, Artist, Venue, Show, VenueGenre
 from sqlalchemy.sql import func
 
 #----------------------------------------------------------------------------#
@@ -286,8 +286,28 @@ def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
 
+  try:
+    venue = Venue(name=request.form['name'], city=request.form['city'], state=request.form['state'], 
+        address=request.form['address'], phone=request.form['phone'], 
+        image_link=request.form['image_link'],
+        facebook_link=request.form['facebook_link'], 
+        website_link=request.form['website_link'],
+        seeking_talent=request.form.get('seeking_talent', 'n') == 'y', 
+        seeking_description=request.form['seeking_description']
+    )
+    db_session.add(venue)
+    db_session.commit()
+  
+    for g in request.form.getlist('genres'):
+        db_session.add(VenueGenre(venue_id=venue.id, name=g))
+    db_session.commit()
+    flash('Venue ' + request.form['name'] + ' was successfully listed!')
+  except Exception as e:
+    print('**** error', e)
+    flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
+
   # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
+  # flash('Venue ' + request.form['name'] + ' was successfully listed!')
   # TODO: on unsuccessful db insert, flash an error instead.
   # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
