@@ -53,7 +53,7 @@ class Venue(Base):
     
     # migration: relations {
     shows = relationship("Show", back_populates="venue")
-    genres = relationship("VenueGenre")
+    genres = relationship("VenueGenre", cascade="save-update, merge, delete, delete-orphan")
     # } migration end
 
     def __repr__(self):
@@ -85,7 +85,7 @@ class Artist(Base):
     seeking_description = Column(String)
     # } migration end
     shows = relationship("Show", back_populates="artist")
-    genres = relationship("ArtistGenre")
+    genres = relationship("ArtistGenre", cascade="save-update, merge, delete, delete-orphan")
 
     def __repr__(self):
         return f'<Artist ID: {self.id}, name: {self.name}>'
@@ -211,8 +211,21 @@ def loadShows():
     loadShow(venue_id=3, artist_id=6, start_time='2035-04-08T20:00:00.000Z')
     loadShow(venue_id=3, artist_id=6, start_time='2035-04-15T20:00:00.000Z')
 
+def setupSequences():
+    engine.execute("SELECT nextval('artist_id_seq')")
+    engine.execute("SELECT nextval('artist_id_seq')")
+    engine.execute("SELECT nextval('artist_id_seq')")
+    engine.execute("SELECT nextval('artist_id_seq')")
+    engine.execute("SELECT nextval('artist_id_seq')")
+    engine.execute("SELECT nextval('artist_id_seq')")
+    engine.execute("SELECT nextval('venue_id_seq')")
+    engine.execute("SELECT nextval('venue_id_seq')")
+    engine.execute("SELECT nextval('venue_id_seq')")
+    
+
 def setupDB():
     createScheme()
     loadVenues()
     loadArtists()
     loadShows()
+    setupSequences()
