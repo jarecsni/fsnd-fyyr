@@ -8,7 +8,7 @@ Create Date: 2022-08-16 14:25:58.176557
 from alembic import op
 import sqlalchemy as sa
 
-from datamodels import Venue
+from datamodels import Artist, ArtistGenre, Genre, Show, Venue, VenueGenre
 
 
 # revision identifiers, used by Alembic.
@@ -77,6 +77,238 @@ def upgrade():
     
     op.drop_table('Venue')
     op.drop_table('Artist')
+
+    # load data
+    op.bulk_insert(Venue.__table__,
+    [   
+        {
+            'id': 1, 
+            'name': 'The musical hop', 
+            'city': 'San Francisco', 
+            'state': 'CA', 
+            'address': '1015 Folsom Street', 
+            'phone': '123-123-1234', 
+            'image_link': 'https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
+            'facebook_link': 'https://www.facebook.com/TheMusicalHop', 
+            'website_link': 'https://www.themusicalhop.com',
+            'seeking_talent': True, 
+            'seeking_description': 'We are on the lookout for a local artist to play every two weeks. Please call us.'
+        },
+        {
+            'id': 2, 
+            'name': 'The dueling pianos bar', 
+            'city': 'New York', 
+            'state': 'NY', 
+            'address': '335 Delancey Street', 
+            'phone': '914-003-1132', 
+            'image_link': 'https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+            'facebook_link': 'https://www.facebook.com/theduelingpiano', 
+            'website_link': 'https://www.theduelingpianos.com',
+            'seeking_talent': False, 
+            'seeking_description': None
+        },
+        {
+            'id': 3, 
+            'name': 'Park Square Live Music & Coffee', 
+            'city': 'San Francisco', 
+            'state': 'CA', 
+            'address': '34 Whiskey Moore Ave', 
+            'phone': '415-000-1234', 
+            'image_link': 'https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80',
+            'facebook_link': 'https://www.facebook.com/ParkSquareLiveMusicAndCoffee', 
+            'website_link': 'https://www.parksquarelivemusicandcoffee.com',
+            'seeking_talent': False, 
+            'seeking_description': None
+        }
+   ])
+
+    op.bulk_insert(Artist.__table__,
+    [   
+        {
+            'id': 4, 
+            'name': 'Guns N Petals', 
+            'city': 'San Francisco', 
+            'state': 'CA', 
+            'phone': '326-123-5000', 
+            'image_link': 'https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80',
+            'facebook_link': 'https://www.facebook.com/GunsNPetals', 
+            'website_link': 'https://www.gunsnpetalsband.com',
+            'seeking_talent': True, 
+            'seeking_description': 'Looking for shows to perform at in the San Francisco Bay Area!.'
+        },
+        {
+            'id': 5, 
+            'name': 'Matt Quevedo', 
+            'city': 'New York', 
+            'state': 'NY', 
+            'phone': '300-400-5000', 
+            'image_link': 'https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=800',
+            'facebook_link': 'https://www.facebook.com/mattquevedo923251523', 
+            'website_link': None,
+            'seeking_talent': False, 
+            'seeking_description': None
+        },
+        {
+            'id': 6, 
+            'name': 'The Wild Sax Band', 
+            'city': 'San Francisco', 
+            'state': 'CA', 
+            'phone': '432-325-5432', 
+            'image_link': 'https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80',
+            'facebook_link': None,
+            'website_link': None,
+            'seeking_talent': False, 
+            'seeking_description': None
+        }
+    ])
+
+    op.bulk_insert(Show.__table__, 
+    [
+        {
+            "venue_id": 1,
+            "artist_id": 4,
+            "start_time": "2019-05-21T21:30:00.000Z"
+        },
+        {
+            "venue_id": 3,
+            "artist_id": 5,
+            "start_time": "2019-06-15T23:00:00.000Z"
+        },
+        {
+            "venue_id": 3,
+            "artist_id": 6,
+            "start_time": "2035-04-01T20:00:00.000Z"
+        },
+        {
+            "venue_id": 3,
+            "artist_id": 6,
+            "start_time": "2035-04-08T20:00:00.000Z"
+        },
+        {
+            "venue_id": 3,
+            "artist_id": 6,
+            "start_time": "2035-04-15T20:00:00.000Z"
+        }
+    ])
+
+    op.bulk_insert(Genre.__table__, 
+    [
+        {
+            "id": 1,
+            "name": "Jazz"
+        },
+        {
+            "id": 2,
+            "name": "Reggae"
+        },
+        {
+            "id": 3,
+            "name": "Swing"
+        },
+        {
+            "id": 4,
+            "name": "Classical"
+        },
+        {
+            "id": 5,
+            "name": "Folk"
+        },
+        {
+            "id": 6,
+            "name": "R&B"
+        },
+        {
+            "id": 7,
+            "name": "Hip-Hop"
+        },
+        {
+            "id": 8,
+            "name": "Rock n Roll"
+        },
+    ])
+
+    op.bulk_insert(VenueGenre.__table__, 
+    [
+        {
+            "venue_id": 1,
+            "genre_id": 1
+        },
+        {
+            "venue_id": 1,
+            "genre_id": 2
+        },
+        {
+            "venue_id": 1,
+            "genre_id": 3
+        },
+        {
+            "venue_id": 1,
+            "genre_id": 4
+        },
+        {
+            "venue_id": 1,
+            "genre_id": 5
+        },
+        {
+            "venue_id": 2,
+            "genre_id": 4
+        },
+        {
+            "venue_id": 2,
+            "genre_id": 6
+        },
+        {
+            "venue_id": 2,
+            "genre_id": 7
+        },
+        {
+            "venue_id": 3,
+            "genre_id": 8
+        },
+        {
+            "venue_id": 3,
+            "genre_id": 1
+        },
+        {
+            "venue_id": 3,
+            "genre_id": 4
+        },
+        {
+            "venue_id": 3,
+            "genre_id": 5
+        }
+    ])
+
+    op.bulk_insert(ArtistGenre.__table__, 
+    [
+        {
+            "artist_id": 4,
+            "genre_id": 8
+        },
+        {
+            "artist_id": 5,
+            "genre_id": 1
+        },
+        {
+            "artist_id": 6,
+            "genre_id": 1
+        },
+        {
+            "artist_id": 6,
+            "genre_id": 4
+        }
+    ])
+
+    for x in range(6):
+        op.execute("SELECT nextval('artist_id_seq')")
+
+    for x in range(4):
+        op.execute("SELECT nextval('venue_id_seq')")
+
+    for x in range(8):
+        op.execute("SELECT nextval('genre_id_seq')")
+
+
     # ### end Alembic commands ###
 
 
