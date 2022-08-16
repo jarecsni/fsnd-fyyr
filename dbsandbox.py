@@ -24,6 +24,12 @@ db_session = scoped_session(
 Base = declarative_base()
 
 ## Relationships:
+
+class Genre(Base):
+    __tablename__ = 'genre'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
 class Show(Base):
     __tablename__ = 'show'
     venue_id = Column(ForeignKey("venue.id"), primary_key=True)
@@ -34,6 +40,16 @@ class Show(Base):
 
     def __repr__(self):
         return f'<Show with Artist: {self.artist.name} at Venue: {self.venue.name} at: {self.start_time}>'
+
+# migration { relations }
+class VenueGenre(Base):
+    __tablename__ = 'venue_genre'
+    venue_id = Column(Integer, ForeignKey("venue.id"), primary_key=True)
+    genre_id = Column(Integer, ForeignKey("genre.id"), primary_key=True)
+    
+    def __repr__(self):
+        return f'<VenueGenre for venue: {self.venue_id}, name: {self.name}>'
+# migration end
 
 class Venue(Base):
     __tablename__ = 'venue'
@@ -53,21 +69,21 @@ class Venue(Base):
     
     # migration: relations {
     shows = relationship("Show", back_populates="venue")
-    genres = relationship("VenueGenre", cascade="save-update, merge, delete, delete-orphan")
+    genres = relationship(Genre, secondary="venue_genre")
     # } migration end
 
     def __repr__(self):
         return f'<Venue ID: {self.id}, name: {self.name}>'
 
-# migration { relations }
-class VenueGenre(Base):
-    __tablename__ = 'venue_genre'
-    venue_id = Column(Integer, ForeignKey("venue.id"), primary_key=True)
-    name = Column(String, nullable=False, primary_key=True)
-    
+
+# migration relations
+class ArtistGenre(Base):
+    __tablename__ = 'artist_genre'
+    artist_id = Column(Integer, ForeignKey("artist.id"), primary_key=True)
+    genre_id = Column(Integer, ForeignKey("genre.id"), primary_key=True)
+# } end migration 
     def __repr__(self):
-        return f'<VenueGenre for venue: {self.venue_id}, name: {self.name}>'
-# migration end
+        return f'<Genre for artist: {self.artist_id}, name: {self.name}>'
 
 class Artist(Base):
     __tablename__ = 'artist'
@@ -85,19 +101,12 @@ class Artist(Base):
     seeking_description = Column(String)
     # } migration end
     shows = relationship("Show", back_populates="artist")
-    genres = relationship("ArtistGenre", cascade="save-update, merge, delete, delete-orphan")
+    genres = relationship(Genre, secondary="artist_genre")
 
     def __repr__(self):
         return f'<Artist ID: {self.id}, name: {self.name}>'
 
-# migration relations
-class ArtistGenre(Base):
-    __tablename__ = 'artist_genre'
-    artist_id = Column(Integer, ForeignKey("artist.id"), primary_key=True)
-    name = Column(String, nullable=False, primary_key=True)
-# } end migration 
-    def __repr__(self):
-        return f'<Genre for artist: {self.artist_id}, name: {self.name}>'
+
 # Commands:
 
 def createScheme():
@@ -115,8 +124,16 @@ def loadVenue(id, name, city, state, address, phone, image_link, facebook_link, 
     db_session.add(venue)
     db_session.commit()
 
-    for g in genres:
-        db_session.add(VenueGenre(venue_id=venue.id, name=g))
+    
+    for genre in genres:
+        _genre = db_session.query(Genre).filter_by(name=genre).one_or_none() 
+        if _genre:
+            venue.genres.append(_genre)
+        else:
+            _genre = Genre(name=genre)
+            db_session.add(_genre)
+            venue.genres.append(_genre) 
+
     db_session.commit()
 
 def loadVenues():
@@ -169,8 +186,15 @@ def loadArtist(id, name, city, state, phone, image_link, facebook_link, website_
     db_session.add(artist)
     db_session.commit()
 
-    for g in genres:
-        db_session.add(ArtistGenre(artist_id=artist.id, name=g))
+    for genre in genres:
+        _genre = db_session.query(Genre).filter_by(name=genre).one_or_none() 
+        if _genre:
+            artist.genres.append(_genre)
+        else:
+            _genre = Genre(name=genre)
+            db_session.add(_genre)
+            artist.genres.append(_genre)
+
     db_session.commit()
 
 def loadArtists():
