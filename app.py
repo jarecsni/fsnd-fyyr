@@ -23,24 +23,16 @@ from datamodels import db, Genre, db_session, Artist, Venue, Show
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
-
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# TODO: connect to a local postgresql database
-
-#----------------------------------------------------------------------------#
-# Models.
-#----------------------------------------------------------------------------#
-
 
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#
-
 def format_datetime(value, format='medium'):
   date = dateutil.parser.parse(value)
   if format == 'full':
@@ -48,10 +40,12 @@ def format_datetime(value, format='medium'):
   elif format == 'medium':
       format="EE MM, dd, y h:mma"
   return babel.dates.format_datetime(date, format, locale='en')
-
 app.jinja_env.filters['datetime'] = format_datetime
 
 
+#----------------------------------------------------------------------------#
+# Routes
+#----------------------------------------------------------------------------#
 @app.route('/')
 def index():
   return render_template('pages/home.html')
@@ -200,13 +194,17 @@ def create_venue_submission():
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
-  # TODO: Complete this endpoint for taking a venue_id, and using
-  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
-
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
-  return None
-
+  try:
+    venue_to_delete = db_session.query(Venue).filter(Venue.id == venue_id).first()
+    if venue_to_delete:
+      shows = db_session.query(Show).filter(Show.venue_id == venue_id).all()
+      for show in shows:
+        db_session.delete(show)
+      db_session.delete(venue_to_delete)
+      db_session.commit()
+    return redirect(url_for('index'))
+  finally: 
+    db_session.close()
 
 @app.route('/artists')
 def artists():
@@ -512,11 +510,11 @@ def create_show_submission():
     db_session.add(show)
     db_session.commit()
     flash('Show was successfully listed!')
-    return render_template('pages/home.html')
   except Exception as e:
     print('error creating new show', e)
     flash('An error occurred. Show could not be listed.')
   finally: 
+    return render_template('pages/home.html')
     db_session.close()
 
 
