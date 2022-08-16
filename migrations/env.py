@@ -1,11 +1,21 @@
 from __future__ import with_statement
-
 import logging
 from logging.config import fileConfig
-
 from flask import current_app
-
 from alembic import context
+from sqlalchemy import MetaData
+
+from datamodels import Show, Venue, Artist, Genre, ArtistGenre, VenueGenre
+
+
+# this is needed so flask-migrate knows about the models which were created with declarative_base, see:
+# https://stackoverflow.com/questions/35189891/how-to-use-flask-migrate-with-other-declarative-bases
+def combine_metadata(*args):
+    m = MetaData()
+    for metadata in args:
+        for t in metadata.tables.values():
+            t.tometadata(m)
+    return m
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -24,7 +34,18 @@ config.set_main_option(
     'sqlalchemy.url',
     str(current_app.extensions['migrate'].db.get_engine().url).replace(
         '%', '%%'))
-target_metadata = current_app.extensions['migrate'].db.metadata
+
+# see comment above at the function declaration for combine_metadata
+target_metadata = combine_metadata(
+    current_app.extensions['migrate'].db.metadata, 
+    Show.metadata, 
+    Venue.metadata, 
+    Artist.metadata, 
+    Genre.metadata, 
+    ArtistGenre.metadata,
+    VenueGenre.metadata
+)
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -89,3 +110,4 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+
