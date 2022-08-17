@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import declarative_base, relationship, scoped_session, sessionmaker
 
 engine = create_engine(
-    "postgresql://johnnyjarecsni:korte321@localhost/sandbox",
+    "postgresql://[user]]:[pw]@localhost/[db]",
     connect_args = {
         "port": 5432
     },
